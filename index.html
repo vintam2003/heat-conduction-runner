@@ -134,18 +134,19 @@ function speedFactor(){
 
 function fitLabel(){
   const s = speedFactor();
-  if (s > 2.8) return 'BEST FIT';
-  if (s > 1.7) return 'GOOD FIT';
-  if (s > 0.8) return 'POOR FIT';
-  return 'VERY POOR FIT';
+  if (s > 2.8) return 'Stable';
+  if (s > 1.7) return 'Less Stable';
+  if (s > 0.8) return 'Unstable';
+  return 'Very Unstable';
 }
 
 function fitColor(){
   const s = speedFactor();
   if (overflow()) return '#ff7a7a';
   if (s > 2.8) return '#8fffad';
-  if (s > 1.7) return '#ffd96a';
-  return '#ffb27a';
+  if (s > 1.9) return '#ffd96a';
+  if (s > 1.1) return '#ffb27a';
+  return '#ff8a8a';
 }
 
 function adjust(dir){
