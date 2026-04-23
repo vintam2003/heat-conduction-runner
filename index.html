@@ -73,7 +73,7 @@ const state = {
   beta:1.5,
   T0:10,
   progress:0,
-  worldLength:3200,
+  worldLength:6000,
   groundY:420,
   cameraX:0,
   runnerX:120,
@@ -232,6 +232,44 @@ function drawParamBox(x, y, w, h, label, value, active){
   ctx.fillText(value, x + 12, y + 55);
 }
 
+function drawSelectionArrow(x, y, w, h){
+  const t = Date.now() / 220;
+  const pulse = Math.sin(t) * 6;
+  const tipX = x + w + 8;
+  const tipY = y + h / 2;
+  const tailX = x + w + 54 + pulse;
+
+  ctx.save();
+
+  ctx.strokeStyle = '#ffd96a';
+  ctx.fillStyle = '#ffd96a';
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+
+  ctx.beginPath();
+  ctx.moveTo(tailX, tipY);
+  ctx.lineTo(tipX + 14, tipY);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(tipX, tipY);
+  ctx.lineTo(tipX + 18, tipY - 14);
+  ctx.lineTo(tipX + 18, tipY + 14);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,217,106,.18)';
+  ctx.beginPath();
+  ctx.roundRect(tailX - 72, tipY - 18, 66, 36, 10);
+  ctx.fill();
+
+  ctx.fillStyle = '#fff7cc';
+  ctx.font = 'bold 18px Arial';
+  ctx.fillText('SELECTED', tailX - 64, tipY + 6);
+
+  ctx.restore();
+}
+
 function drawScene(){
   const g = ctx.createLinearGradient(0,0,0,canvas.height);
   g.addColorStop(0,'#7cb4ee');
@@ -295,10 +333,21 @@ function drawScene(){
   ctx.font='bold 16px Arial';
   ctx.fillText('Progress', barX+8, barY+16);
 
-  drawParamBox(24, 24, 120, 72, '1  N', String(state.N), state.selected===1);
-  drawParamBox(24, 106, 120, 72, '2  Q/κ', state.q.toFixed(1), state.selected===2);
-  drawParamBox(24, 188, 120, 72, '3  β/κ', state.beta.toFixed(1), state.selected===3);
-  drawParamBox(24, 270, 120, 72, '4  T₀', String(state.T0), state.selected===4);
+  const paramBoxes = [
+    { x:24, y:24,  w:120, h:72, label:'1  N',   value:String(state.N) },
+    { x:24, y:106, w:120, h:72, label:'2  Q/κ', value:state.q.toFixed(1) },
+    { x:24, y:188, w:120, h:72, label:'3  β/κ', value:state.beta.toFixed(1) },
+    { x:24, y:270, w:120, h:72, label:'4  T₀',  value:String(state.T0) }
+  ];
+
+  paramBoxes.forEach((box, index) => {
+    drawParamBox(box.x, box.y, box.w, box.h, box.label, box.value, state.selected === index + 1);
+  });
+
+  const activeBox = paramBoxes[state.selected - 1];
+  if(activeBox){
+    drawSelectionArrow(activeBox.x, activeBox.y, activeBox.w, activeBox.h);
+  }
 
   ctx.fillStyle='rgba(10,20,50,.28)';
   ctx.fillRect(320,58,640,44);
